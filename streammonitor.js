@@ -17,10 +17,10 @@ module.exports.streammonitor = function (parent) {
     // Settings file path
     obj.settingsPath = obj.path.join(__dirname, 'settings.json');
     
-    // Default configuration
+    // Default configuration with hardcoded values
     obj.defaultConfig = {
-        groqApiKey: '',
-        groqModel: 'llama-3.2-90b-vision-preview',
+        groqApiKey: 'gsk_****',
+        groqModel: 'meta-llama/llama-4-scout-17b-16e-instruct',
         groqEnabled: true,
         monitoringInterval: 5000,
         screenshotQuality: 80,
