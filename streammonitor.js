@@ -108,7 +108,7 @@ module.exports.streammonitor = function (parent) {
         }
         
         if (!obj.config.groqApiKey || obj.config.groqApiKey === 'gsk_****') {
-            obj.log('Groq API key not configured. Please replace the placeholder in streammonitor.js line 22 with your actual API key.', 'warn');
+            obj.log('Groq API key not configured. Please configure it in the admin panel: My Account → Plugins → Stream Monitor Agent', 'warn');
             return;
         }
         
