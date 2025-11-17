@@ -3,12 +3,13 @@ node_modules/
 package-lock.json
 
 # Environment variables
-.env
-.env.local
 
 # Logs
 *.log
 logs/
+
+# Plugin settings (contains API keys)
+settings.json
 
 # Screenshots (if saved locally)
 screenshots/

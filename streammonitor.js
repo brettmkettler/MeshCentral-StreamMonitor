@@ -14,16 +14,26 @@ module.exports.streammonitor = function (parent) {
     obj.fs = require('fs');
     obj.path = require('path');
     
-    // Configuration
-    obj.config = {
-        groqApiKey: process.env.GROQ_API_KEY || '',
-        monitoringInterval: 5000, // 5 seconds between captures
+    // Settings file path
+    obj.settingsPath = obj.path.join(__dirname, 'settings.json');
+    
+    // Default configuration
+    obj.defaultConfig = {
+        groqApiKey: '',
+        groqModel: 'llama-3.2-90b-vision-preview',
+        groqEnabled: true,
+        monitoringInterval: 5000,
         screenshotQuality: 80,
         maxConcurrentAnalysis: 3,
         enableLogging: true,
-        activityThreshold: 0.7, // Confidence threshold for reporting
-        monitoredDevices: new Set()
+        activityThreshold: 0.7,
+        analysisPrompt: '',
+        temperature: 0.3,
+        maxTokens: 500
     };
+    
+    // Current configuration (loaded from file or defaults)
+    obj.config = { ...obj.defaultConfig, monitoredDevices: new Set() };
     
     // State management
     obj.activeMonitors = new Map(); // deviceId -> monitor state
@@ -39,15 +49,73 @@ module.exports.streammonitor = function (parent) {
     ];
     
     /**
+     * Load settings from file
+     */
+    obj.loadSettings = function() {
+        try {
+            if (obj.fs.existsSync(obj.settingsPath)) {
+                const data = obj.fs.readFileSync(obj.settingsPath, 'utf8');
+                const savedSettings = JSON.parse(data);
+                obj.config = { ...obj.defaultConfig, ...savedSettings, monitoredDevices: new Set() };
+                obj.log('Settings loaded from file');
+                return true;
+            } else {
+                obj.log('No settings file found, using defaults');
+                return false;
+            }
+        } catch (err) {
+            obj.log('Error loading settings: ' + err.message, 'error');
+            return false;
+        }
+    };
+    
+    /**
+     * Save settings to file
+     */
+    obj.saveSettings = function(newSettings) {
+        try {
+            // Merge with current config
+            const settingsToSave = { ...obj.config, ...newSettings };
+            delete settingsToSave.monitoredDevices; // Don't save the Set
+            
+            obj.fs.writeFileSync(obj.settingsPath, JSON.stringify(settingsToSave, null, 2), 'utf8');
+            
+            // Update current config
+            obj.config = { ...obj.config, ...newSettings };
+            
+            // Reinitialize Groq if API key changed
+            if (newSettings.groqApiKey) {
+                obj.initGroq();
+            }
+            
+            obj.log('Settings saved successfully');
+            return true;
+        } catch (err) {
+            obj.log('Error saving settings: ' + err.message, 'error');
+            return false;
+        }
+    };
+    
+    /**
      * Initialize Groq client
      */
     obj.initGroq = function() {
+        if (!obj.config.groqEnabled) {
+            obj.log('Groq analysis is disabled in settings');
+            return;
+        }
+        
+        if (!obj.config.groqApiKey) {
+            obj.log('Groq API key not configured. Please set it in the admin panel.', 'warn');
+            return;
+        }
+        
         try {
             const Groq = require('groq-sdk');
             obj.groqClient = new Groq({
                 apiKey: obj.config.groqApiKey
             });
-            obj.log('Groq client initialized successfully');
+            obj.log('Groq client initialized successfully with model: ' + obj.config.groqModel);
         } catch (err) {
             obj.log('Error initializing Groq client: ' + err.message, 'error');
         }
@@ -59,12 +127,11 @@ module.exports.streammonitor = function (parent) {
     obj.server_startup = function() {
         obj.log('Stream Monitor Plugin starting up...');
         
-        // Initialize Groq if API key is available
-        if (obj.config.groqApiKey) {
-            obj.initGroq();
-        } else {
-            obj.log('GROQ_API_KEY not set. Please configure it to enable AI analysis.', 'warn');
-        }
+        // Load settings from file
+        obj.loadSettings();
+        
+        // Initialize Groq if configured
+        obj.initGroq();
         
         // Setup HTTP handlers for plugin API
         obj.setupHttpHandlers();
@@ -118,6 +185,74 @@ module.exports.streammonitor = function (parent) {
             
             obj.updatePluginConfig(req.body);
             res.json({ success: true, message: 'Configuration updated' });
+        });
+        
+        // API endpoint for getting settings
+        obj.parent.parent.app.get('/pluginadmin.ashx/streammonitor/settings', function(req, res) {
+            if (!obj.checkAuth(req, res)) return;
+            
+            // Return settings without exposing full API key
+            const safeSettings = { ...obj.config };
+            if (safeSettings.groqApiKey) {
+                safeSettings.groqApiKey = safeSettings.groqApiKey.substring(0, 10) + '...' + safeSettings.groqApiKey.slice(-4);
+            }
+            delete safeSettings.monitoredDevices;
+            
+            res.json({ success: true, settings: safeSettings });
+        });
+        
+        // API endpoint for saving settings
+        obj.parent.parent.app.post('/pluginadmin.ashx/streammonitor/settings', function(req, res) {
+            if (!obj.checkAuth(req, res)) return;
+            
+            const success = obj.saveSettings(req.body);
+            if (success) {
+                res.json({ success: true, message: 'Settings saved successfully' });
+            } else {
+                res.status(500).json({ success: false, error: 'Failed to save settings' });
+            }
+        });
+        
+        // API endpoint for testing Groq connection
+        obj.parent.parent.app.post('/pluginadmin.ashx/streammonitor/test-groq', async function(req, res) {
+            if (!obj.checkAuth(req, res)) return;
+            
+            const { apiKey, model } = req.body;
+            
+            if (!apiKey) {
+                res.status(400).json({ success: false, error: 'API key required' });
+                return;
+            }
+            
+            try {
+                const Groq = require('groq-sdk');
+                const testClient = new Groq({ apiKey: apiKey });
+                
+                // Test with a simple completion
+                const completion = await testClient.chat.completions.create({
+                    model: model || 'llama-3.2-90b-vision-preview',
+                    messages: [
+                        {
+                            role: 'user',
+                            content: 'Reply with just "OK" if you can read this.'
+                        }
+                    ],
+                    max_tokens: 10
+                });
+                
+                if (completion && completion.choices && completion.choices.length > 0) {
+                    res.json({ 
+                        success: true, 
+                        message: 'Connection successful',
+                        model: completion.model
+                    });
+                } else {
+                    res.json({ success: false, error: 'Invalid response from Groq API' });
+                }
+            } catch (err) {
+                obj.log('Groq test failed: ' + err.message, 'error');
+                res.json({ success: false, error: err.message });
+            }
         });
     };
     
@@ -254,16 +389,21 @@ module.exports.streammonitor = function (parent) {
                 ? screenshot.toString('base64') 
                 : screenshot;
             
-            // Use Groq's vision model (llama-3.2-90b-vision-preview or similar)
+            // Default prompt if none configured
+            const defaultPrompt = "Analyze this screenshot and describe any significant activity, user interactions, or notable content. Focus on: 1) What applications or windows are visible, 2) What actions the user appears to be taking, 3) Any suspicious or unusual activity, 4) Overall activity level (low/medium/high). Provide a confidence score (0-1) for your analysis.";
+            
+            const promptText = obj.config.analysisPrompt || defaultPrompt;
+            
+            // Use configured Groq vision model
             const completion = await obj.groqClient.chat.completions.create({
-                model: "llama-3.2-90b-vision-preview",
+                model: obj.config.groqModel || "llama-3.2-90b-vision-preview",
                 messages: [
                     {
                         role: "user",
                         content: [
                             {
                                 type: "text",
-                                text: "Analyze this screenshot and describe any significant activity, user interactions, or notable content. Focus on: 1) What applications or windows are visible, 2) What actions the user appears to be taking, 3) Any suspicious or unusual activity, 4) Overall activity level (low/medium/high). Provide a confidence score (0-1) for your analysis."
+                                text: promptText
                             },
                             {
                                 type: "image_url",
@@ -274,8 +414,8 @@ module.exports.streammonitor = function (parent) {
                         ]
                     }
                 ],
-                temperature: 0.3,
-                max_tokens: 500
+                temperature: obj.config.temperature || 0.3,
+                max_tokens: obj.config.maxTokens || 500
             });
             
             const response = completion.choices[0]?.message?.content || '';
