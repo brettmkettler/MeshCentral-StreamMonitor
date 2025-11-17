@@ -14,6 +14,7 @@ module.exports.streammonitor = function (parent) {
     obj.meshServer = parent.parent;
     obj.fs = require('fs');
     obj.path = require('path');
+    obj.VIEWS = __dirname + '/views/';
     
     // Settings file path
     obj.settingsPath = obj.path.join(__dirname, 'settings.json');
@@ -152,6 +153,13 @@ module.exports.streammonitor = function (parent) {
      * Setup HTTP handlers for plugin API endpoints
      */
     obj.setupHttpHandlers = function() {
+        // Admin panel view
+        obj.meshServer.webserver.app.get('/pluginadmin.ashx', function(req, res) {
+            if (req.query.pin === 'streammonitor') {
+                res.render(obj.VIEWS + 'admin', {});
+            }
+        });
+        
         // API endpoint for starting monitoring
         obj.meshServer.webserver.app.post('/pluginadmin.ashx/streammonitor/start', function(req, res) {
             if (!obj.checkAuth(req, res)) return;
