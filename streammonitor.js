@@ -22,8 +22,8 @@ module.exports.streammonitor = function (parent) {
     // Default configuration with hardcoded values
     // IMPORTANT: Replace 'YOUR_API_KEY_HERE' with your actual Groq API key
     obj.defaultConfig = {
-        groqApiKey: 'YOUR_API_KEY_HERE',  // Replace with your Groq API key from console.groq.com
-        groqModel: 'llama-3.2-90b-vision-preview',  // Vision-capable model for screenshot analysis
+        groqApiKey: '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',  // Replace with your Groq API key from console.groq.com
+        groqModel: 'meta-llama/llama-4-scout-17b-16e-instruct',  // Vision-capable model for screenshot analysis
         groqEnabled: true,
         monitoringInterval: 5000,
         screenshotQuality: 80,
