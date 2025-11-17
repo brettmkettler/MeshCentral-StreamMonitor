@@ -20,9 +20,10 @@ module.exports.streammonitor = function (parent) {
     obj.settingsPath = obj.path.join(__dirname, 'settings.json');
     
     // Default configuration with hardcoded values
+    // IMPORTANT: Replace 'YOUR_API_KEY_HERE' with your actual Groq API key
     obj.defaultConfig = {
-        groqApiKey: 'gsk_****',
-        groqModel: 'meta-llama/llama-4-scout-17b-16e-instruct',
+        groqApiKey: 'YOUR_API_KEY_HERE',  // Replace with your Groq API key from console.groq.com
+        groqModel: 'llama-3.2-90b-vision-preview',  // Vision-capable model for screenshot analysis
         groqEnabled: true,
         monitoringInterval: 5000,
         screenshotQuality: 80,
@@ -107,8 +108,8 @@ module.exports.streammonitor = function (parent) {
             return;
         }
         
-        if (!obj.config.groqApiKey || obj.config.groqApiKey === 'gsk_****') {
-            obj.log('Groq API key not configured. Please configure it in the admin panel: My Account → Plugins → Stream Monitor Agent', 'warn');
+        if (!obj.config.groqApiKey || obj.config.groqApiKey === 'YOUR_API_KEY_HERE' || obj.config.groqApiKey === 'gsk_****') {
+            obj.log('Groq API key not configured. Please replace YOUR_API_KEY_HERE in streammonitor.js line 25 with your actual API key', 'warn');
             return;
         }
         
