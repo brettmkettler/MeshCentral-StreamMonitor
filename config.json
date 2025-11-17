@@ -1,0 +1,14 @@
+{
+  "name": "Stream Monitor Agent",
+  "shortName": "streammonitor",
+  "version": "0.1.0",
+  "author": "Brett Kettler",
+  "description": "AI-powered stream monitoring plugin using Groq multimodal LLM for activity detection and analysis",
+  "hasAdminPanel": true,
+  "homepage": "https://github.com/brettkettler/MeshCentral-StreamMonitor",
+  "meshCentralCompat": ">=0.4.4-s",
+  "dependencies": {
+    "groq-sdk": "^0.7.0",
+    "sharp": "^0.33.0"
+  }
+}

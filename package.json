@@ -1,0 +1,29 @@
+{
+  "name": "meshcentral-streammonitor",
+  "version": "0.1.0",
+  "description": "AI-powered stream monitoring plugin for MeshCentral using Groq multimodal LLM",
+  "main": "streammonitor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "meshcentral",
+    "plugin",
+    "monitoring",
+    "ai",
+    "groq",
+    "llm",
+    "vision",
+    "ocr",
+    "stream"
+  ],
+  "author": "Brett Kettler",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "groq-sdk": "^0.7.0",
+    "sharp": "^0.33.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
