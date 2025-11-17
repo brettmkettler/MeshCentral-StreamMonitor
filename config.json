@@ -5,7 +5,15 @@
   "author": "Brett Kettler",
   "description": "AI-powered stream monitoring plugin using Groq multimodal LLM for activity detection and analysis",
   "hasAdminPanel": true,
-  "homepage": "https://github.com/brettkettler/MeshCentral-StreamMonitor",
+  "homepage": "https://github.com/brettmkettler/MeshCentral-StreamMonitor",
+  "changelogUrl": "https://raw.githubusercontent.com/brettmkettler/MeshCentral-StreamMonitor/main/changelog.md",
+  "configUrl": "https://raw.githubusercontent.com/brettmkettler/MeshCentral-StreamMonitor/main/config.json",
+  "downloadUrl": "https://github.com/brettmkettler/MeshCentral-StreamMonitor/archive/main.zip",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brettmkettler/MeshCentral-StreamMonitor.git"
+  },
+  "versionHistoryUrl": "https://api.github.com/repos/brettmkettler/MeshCentral-StreamMonitor/tags",
   "meshCentralCompat": ">=0.4.4-s",
   "dependencies": {
     "groq-sdk": "^0.7.0",
