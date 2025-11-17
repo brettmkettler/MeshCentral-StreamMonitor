@@ -63,6 +63,19 @@ AI-powered stream monitoring plugin for MeshCentral that uses Groq's multimodal 
 
 ## Configuration
 
+### ⚠️ Important: API Key Setup
+
+The Groq API key is hardcoded in `streammonitor.js` line 22 as a placeholder (`gsk_****`). 
+
+**Before using the plugin, replace the placeholder with your actual API key:**
+
+1. Open `streammonitor.js`
+2. Find line 22: `groqApiKey: 'gsk_****',`
+3. Replace `gsk_****` with your actual Groq API key from [console.groq.com](https://console.groq.com/)
+4. Save the file and restart MeshCentral
+
+**Note:** The API key is stored directly in the code. Do not share this file publicly with your real API key.
+
 ### 🎨 Web-Based Configuration (Recommended)
 
 The easiest way to configure the plugin is through the built-in settings UI:
