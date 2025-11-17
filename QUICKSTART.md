@@ -31,22 +31,20 @@ npm install
 cp .env.example .env
 ```
 
-### Step 2: Configure Groq API Key
+### Step 2: Configure via Web UI
 
-Edit the `.env` file:
+**No config files needed!** Configure everything through the web interface:
 
-```bash
-nano .env
-```
+1. Restart MeshCentral after installing the plugin
+2. Log into MeshCentral web interface
+3. Navigate to **My Account** → **Plugins**
+4. Click on **Stream Monitor Agent**
+5. Enter your Groq API key from [console.groq.com](https://console.groq.com/)
+6. Click **Test Connection** to verify it works
+7. Adjust other settings as desired
+8. Click **💾 Save Settings**
 
-Set your API key:
-
-```env
-GROQ_API_KEY=gsk_your_api_key_here
-```
-
-Or export as environment variable:
-
+**Alternative (Legacy):** You can also set via environment variable:
 ```bash
 export GROQ_API_KEY='gsk_your_api_key_here'
 ```

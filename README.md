@@ -4,6 +4,7 @@ AI-powered stream monitoring plugin for MeshCentral that uses Groq's multimodal 
 
 ## Features
 
+- 🎨 **Web-Based Settings UI**: Configure everything through the MeshCentral admin panel - no config files needed!
 - 🤖 **AI-Powered Analysis**: Uses Groq's vision-capable LLM (llama-3.2-90b-vision-preview) for intelligent activity detection
 - 📸 **Automated Screenshot Capture**: Periodic screenshot capture from monitored devices
 - 🔍 **Activity Detection**: Identifies user interactions, applications, and suspicious behavior
@@ -11,6 +12,7 @@ AI-powered stream monitoring plugin for MeshCentral that uses Groq's multimodal 
 - 📊 **Confidence Scoring**: Each analysis includes a confidence score for reliability
 - 🎯 **Threshold-based Alerts**: Only report activity above configurable confidence thresholds
 - 🌐 **REST API**: Full API for programmatic control and integration
+- ✅ **Built-in Connection Testing**: Test your Groq API key directly from the UI
 
 ## Prerequisites
 
@@ -50,33 +52,57 @@ AI-powered stream monitoring plugin for MeshCentral that uses Groq's multimodal 
    npm install
    ```
 
-3. Set your Groq API key as an environment variable:
-   ```bash
-   export GROQ_API_KEY='your-api-key-here'
-   ```
+3. Restart your MeshCentral server
 
-4. Restart your MeshCentral server
+4. **Configure via Web UI** (Recommended):
+   - Log into MeshCentral
+   - Go to **My Account** → **Plugins**
+   - Click on **Stream Monitor Agent**
+   - Enter your Groq API key and configure settings
+   - Click **Save Settings**
 
 ## Configuration
 
-### Environment Variables
+### 🎨 Web-Based Configuration (Recommended)
 
-- `GROQ_API_KEY`: Your Groq API key (required for AI analysis)
+The easiest way to configure the plugin is through the built-in settings UI:
 
-### Plugin Configuration
+1. **Access Settings Panel**:
+   - Navigate to **My Account** → **Plugins** in MeshCentral
+   - Click on **Stream Monitor Agent**
+   - You'll see a comprehensive settings interface
 
-You can update the configuration via the API or by modifying the plugin code:
+2. **Configure Groq API**:
+   - Enter your Groq API key from [console.groq.com](https://console.groq.com/)
+   - Select your preferred model
+   - Click "Test Connection" to verify
 
-```javascript
-{
-  "groqApiKey": "your-api-key",           // Groq API key
-  "monitoringInterval": 5000,              // Capture interval in ms (default: 5 seconds)
-  "screenshotQuality": 80,                 // JPEG quality (0-100)
-  "maxConcurrentAnalysis": 3,              // Max parallel analyses
-  "activityThreshold": 0.7,                // Confidence threshold (0-1)
-  "enableLogging": true                    // Enable detailed logging
-}
+3. **Adjust Monitoring Settings**:
+   - Set capture interval (how often to take screenshots)
+   - Configure screenshot quality
+   - Set activity threshold (confidence level for alerts)
+   - Enable/disable detailed logging
+
+4. **Customize Analysis** (Optional):
+   - Add custom analysis prompt
+   - Adjust AI temperature and max tokens
+   - Fine-tune for your specific use case
+
+5. **Save Settings**:
+   - Click **💾 Save Settings**
+   - Settings are saved to `settings.json`
+   - No server restart required!
+
+See [SETTINGS_UI_GUIDE.md](SETTINGS_UI_GUIDE.md) for detailed documentation.
+
+### Alternative: Environment Variables (Legacy)
+
+You can also set the API key via environment variable:
+```bash
+export GROQ_API_KEY='your-api-key-here'
 ```
+
+**Note:** Settings configured via the UI take precedence over environment variables.
 
 ## Usage
 
