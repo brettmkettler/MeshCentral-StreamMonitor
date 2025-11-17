@@ -11,6 +11,7 @@
 module.exports.streammonitor = function (parent) {
     var obj = {};
     obj.parent = parent;
+    obj.meshServer = parent.parent;
     obj.fs = require('fs');
     obj.path = require('path');
     
@@ -152,7 +153,7 @@ module.exports.streammonitor = function (parent) {
      */
     obj.setupHttpHandlers = function() {
         // API endpoint for starting monitoring
-        obj.parent.parent.app.post('/pluginadmin.ashx/streammonitor/start', function(req, res) {
+        obj.meshServer.webserver.app.post('/pluginadmin.ashx/streammonitor/start', function(req, res) {
             if (!obj.checkAuth(req, res)) return;
             
             const deviceId = req.body.deviceId;
@@ -166,7 +167,7 @@ module.exports.streammonitor = function (parent) {
         });
         
         // API endpoint for stopping monitoring
-        obj.parent.parent.app.post('/pluginadmin.ashx/streammonitor/stop', function(req, res) {
+        obj.meshServer.webserver.app.post('/pluginadmin.ashx/streammonitor/stop', function(req, res) {
             if (!obj.checkAuth(req, res)) return;
             
             const deviceId = req.body.deviceId;
@@ -180,7 +181,7 @@ module.exports.streammonitor = function (parent) {
         });
         
         // API endpoint for getting monitor status
-        obj.parent.parent.app.get('/pluginadmin.ashx/streammonitor/status', function(req, res) {
+        obj.meshServer.webserver.app.get('/pluginadmin.ashx/streammonitor/status', function(req, res) {
             if (!obj.checkAuth(req, res)) return;
             
             const status = obj.getMonitoringStatus();
@@ -188,7 +189,7 @@ module.exports.streammonitor = function (parent) {
         });
         
         // API endpoint for updating configuration
-        obj.parent.parent.app.post('/pluginadmin.ashx/streammonitor/config', function(req, res) {
+        obj.meshServer.webserver.app.post('/pluginadmin.ashx/streammonitor/config', function(req, res) {
             if (!obj.checkAuth(req, res)) return;
             
             obj.updatePluginConfig(req.body);
@@ -196,7 +197,7 @@ module.exports.streammonitor = function (parent) {
         });
         
         // API endpoint for getting settings
-        obj.parent.parent.app.get('/pluginadmin.ashx/streammonitor/settings', function(req, res) {
+        obj.meshServer.webserver.app.get('/pluginadmin.ashx/streammonitor/settings', function(req, res) {
             if (!obj.checkAuth(req, res)) return;
             
             // Return settings without exposing full API key
@@ -210,7 +211,7 @@ module.exports.streammonitor = function (parent) {
         });
         
         // API endpoint for saving settings
-        obj.parent.parent.app.post('/pluginadmin.ashx/streammonitor/settings', function(req, res) {
+        obj.meshServer.webserver.app.post('/pluginadmin.ashx/streammonitor/settings', function(req, res) {
             if (!obj.checkAuth(req, res)) return;
             
             const success = obj.saveSettings(req.body);
@@ -222,7 +223,7 @@ module.exports.streammonitor = function (parent) {
         });
         
         // API endpoint for testing Groq connection
-        obj.parent.parent.app.post('/pluginadmin.ashx/streammonitor/test-groq', async function(req, res) {
+        obj.meshServer.webserver.app.post('/pluginadmin.ashx/streammonitor/test-groq', async function(req, res) {
             if (!obj.checkAuth(req, res)) return;
             
             const { apiKey, model } = req.body;
