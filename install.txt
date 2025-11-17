@@ -1,0 +1,60 @@
+MeshCentral Stream Monitor Plugin - Installation Instructions
+
+OPTION 1: Via MeshCentral Plugin Manager (Recommended)
+========================================================
+1. Log into your MeshCentral web interface as admin
+2. Go to "My Account" → "Plugins"
+3. Click "Install Plugin"
+4. Enter this URL:
+   https://raw.githubusercontent.com/brettmkettler/MeshCentral-StreamMonitor/main/config.json
+5. Click "Install"
+6. Wait for MeshCentral to restart
+
+OPTION 2: Manual Installation
+==============================
+1. Navigate to your MeshCentral data directory:
+   cd /path/to/meshcentral-data/plugins
+   
+2. Clone or download the plugin:
+   git clone https://github.com/brettmkettler/MeshCentral-StreamMonitor.git streammonitor
+   
+3. Install dependencies:
+   cd streammonitor
+   npm install
+   
+4. Restart MeshCentral server
+
+TROUBLESHOOTING
+===============
+If the plugin shows as "disabled" after installation:
+
+1. Check MeshCentral logs for errors:
+   - Look in meshcentral-data/meshcentral.log
+   - Or check console output if running in terminal
+   
+2. Verify dependencies installed:
+   cd meshcentral-data/plugins/streammonitor
+   ls node_modules/
+   # Should see: groq-sdk, sharp, and their dependencies
+   
+3. Manually install dependencies if needed:
+   cd meshcentral-data/plugins/streammonitor
+   npm install
+   
+4. Check for errors in the plugin code:
+   - Look for "StreamMonitor" in the MeshCentral log
+   - Common issues: missing dependencies, syntax errors
+   
+5. Verify MeshCentral has plugins enabled in config.json:
+   {
+     "plugins": {
+       "enabled": true
+     }
+   }
+
+6. Replace API key placeholder:
+   - Edit streammonitor.js line 22
+   - Replace 'gsk_****' with your actual Groq API key
+   
+For support, open an issue at:
+https://github.com/brettmkettler/MeshCentral-StreamMonitor/issues

@@ -105,8 +105,8 @@ module.exports.streammonitor = function (parent) {
             return;
         }
         
-        if (!obj.config.groqApiKey) {
-            obj.log('Groq API key not configured. Please set it in the admin panel.', 'warn');
+        if (!obj.config.groqApiKey || obj.config.groqApiKey === 'gsk_****') {
+            obj.log('Groq API key not configured. Please replace the placeholder in streammonitor.js line 22 with your actual API key.', 'warn');
             return;
         }
         
@@ -118,6 +118,7 @@ module.exports.streammonitor = function (parent) {
             obj.log('Groq client initialized successfully with model: ' + obj.config.groqModel);
         } catch (err) {
             obj.log('Error initializing Groq client: ' + err.message, 'error');
+            obj.log('Make sure groq-sdk is installed: npm install groq-sdk', 'error');
         }
     };
     
@@ -125,18 +126,25 @@ module.exports.streammonitor = function (parent) {
      * Server startup hook
      */
     obj.server_startup = function() {
-        obj.log('Stream Monitor Plugin starting up...');
-        
-        // Load settings from file
-        obj.loadSettings();
-        
-        // Initialize Groq if configured
-        obj.initGroq();
-        
-        // Setup HTTP handlers for plugin API
-        obj.setupHttpHandlers();
-        
-        obj.log('Stream Monitor Plugin started successfully');
+        try {
+            obj.log('Stream Monitor Plugin starting up...');
+            obj.log('Plugin directory: ' + __dirname);
+            
+            // Load settings from file
+            obj.loadSettings();
+            
+            // Initialize Groq if configured
+            obj.initGroq();
+            
+            // Setup HTTP handlers for plugin API
+            obj.setupHttpHandlers();
+            
+            obj.log('Stream Monitor Plugin started successfully');
+        } catch (err) {
+            obj.log('FATAL ERROR during plugin startup: ' + err.message, 'error');
+            obj.log('Stack trace: ' + err.stack, 'error');
+            throw err; // Re-throw to let MeshCentral know the plugin failed
+        }
     };
     
     /**
