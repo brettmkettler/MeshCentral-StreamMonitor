@@ -153,10 +153,12 @@ module.exports.streammonitor = function (parent) {
      * Setup HTTP handlers for plugin API endpoints
      */
     obj.setupHttpHandlers = function() {
-        // Admin panel view
-        obj.meshServer.webserver.app.get('/pluginadmin.ashx', function(req, res) {
+        // Admin panel view - MeshCentral handles auth for /pluginadmin.ashx
+        obj.meshServer.webserver.app.get('/pluginadmin.ashx', function(req, res, next) {
             if (req.query.pin === 'streammonitor') {
                 res.render(obj.VIEWS + 'admin', {});
+            } else {
+                next(); // Pass to next handler if not our plugin
             }
         });
         
@@ -277,7 +279,9 @@ module.exports.streammonitor = function (parent) {
      * Check authentication for API requests
      */
     obj.checkAuth = function(req, res) {
-        if (!req.session || !req.session.userid) {
+        // MeshCentral stores user in req.session.userid or req.user
+        const user = req.session?.userid || req.user;
+        if (!user) {
             res.status(401).json({ error: 'Unauthorized' });
             return false;
         }
