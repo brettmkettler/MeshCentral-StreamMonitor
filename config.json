@@ -1,7 +1,7 @@
 {
   "name": "Stream Monitor Agent",
   "shortName": "streammonitor",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "Brett Kettler",
   "description": "AI-powered stream monitoring plugin using Groq multimodal LLM for activity detection and analysis",
   "hasAdminPanel": true,
